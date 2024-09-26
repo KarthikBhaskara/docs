@@ -15,14 +15,8 @@
       "to": "#07C983"
     }
   },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:quotes@joinarlo.com"
-    }
-  ],
   "topbarCtaButton": {
-    "name": "Dashboard",
+    "name": "Quoting Portal",
     "url": "https://quotes.joinarlo.com"
   },
   "tabs": [],
