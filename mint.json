@@ -44,7 +44,12 @@
     },
     {
       "group": "API Reference",
-      "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+       "tabs": [
+        {
+            "tab": "API Reference",
+            "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+        }
+      ]
     }
   ],
   "footerSocials": {
