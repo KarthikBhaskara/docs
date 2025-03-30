@@ -1,0 +1,222 @@
+---
+title: 'Quoting with the CPQ API'
+'og:title': 'Quoting with the CPQ API | Arlo Support Center'
+description: 'Learn how to quote with the CPQ API'
+'og:description': 'Learn how to quote with the CPQ API'
+---
+
+Welcome to the Arlo CPQ API Documentation. The CPQ API provides a RESTful interface that allows you to obtain quotes from Arlo through simple HTTP requests.
+
+Please reach out to [karthik+cpq@joinarlo.com](mailto:karthik+cpq@joinarlo.com) if you have any questions!
+
+---
+
+# Overview
+
+The end-to-end process is very simple:
+<Steps>
+  <Step title="Get the list of plans">
+    Get the list of plans offered by Arlo - `GET /plans`
+  </Step>
+  <Step title="Submit proposal information">
+    Submit proposal information - `POST /proposal`
+  </Step>
+  <Step title="Poll until the proposal is ready">
+    Poll until the proposal is ready - `GET /proposal/<proposal_id>`
+  </Step>
+  <Step title="Mark the proposal as sold">
+    Mark the proposal as sold - `POST /proposal/<proposal_id>/mark-sold`
+  </Step>
+</Steps>
+
+
+# Endpoints
+
+You may find the OpenAPI docs [here](https://underwriting-api.joinarlo.com/docs#/) and the raw JSON specification [here](https://underwriting-api.joinarlo.com/openapi.json). The base API URL is `https://underwriting-api.joinarlo.com/cpq`.
+
+*The OpenAPI documentation provides comprehensive details for each endpoint, including response types and sample responses. This resource helps streamline your development process while reducing the need for numerous test API requests to our testing environment.*
+
+## Plans
+
+A plan is defined by a unique combination of network, PBM, vendor stack, and benefit details (including accumulators and cost shares by benefit category). You can retrieve detailed breakdowns of all plans offered by Arlo through these endpoints. The responses provide comprehensive benefits information, including accumulators, cost share data by benefit category, and other plan specifications.
+
+### Get all plans
+
+[Endpoint Documentation](https://underwriting-api.joinarlo.com/docs#/Plans/route_handler_cpq_plans_get)
+
+This endpoint returns all available plans that can be quoted and their detailed information.
+
+<CodeGroup>
+```sh Request
+curl --request GET \
+  --header "Authorization: Bearer <your_api_key>" \
+  --header "Arlo-API-Version: 2025-04-01" \
+  --url https://underwriting-api.joinarlo.com/cpq/plans
+```
+</CodeGroup>
+
+### Get a specific plan
+
+[Endpoint Documentation](https://underwriting-api.joinarlo.com/docs#/Plan/route_handler_cpq_plan__plan_design_id__get)
+
+This endpoint returns the detailed information of a specific plan. The `plan_id` can be retrieved from the bulk `/plans` endpoint.
+
+<CodeGroup>
+```sh Request
+curl --request GET \
+  --header "Authorization: Bearer <your_api_key>" \
+  --header "Arlo-API-Version: 2025-04-01" \
+  --url https://underwriting-api.joinarlo.com/cpq/plan/<plan_id>
+```
+</CodeGroup>
+
+
+## Proposals
+
+To obtain quotes from Arlo, create a proposal for each new opportunity. A proposal represents a unique pairing of quoting broker and group. Note that any modification to group information—including name, effective date, headquarters state, or census data—requires creating a new proposal.
+
+### Submit proposal information
+
+[Endpoint Documentation](https://underwriting-api.joinarlo.com/docs#/Proposal/route_handler_cpq_proposal_post)
+
+<CodeGroup>
+```sh Request
+curl --request POST \
+  --header "Authorization: Bearer <your_api_key>" \
+  --header "Arlo-API-Version: 2025-04-01" \
+  --header "Content-Type: application/json" \
+  --url https://underwriting-api.joinarlo.com/cpq/proposal \
+  --data '{
+    "key1": "value1",
+    "key2": "value2"
+  }'
+```
+</CodeGroup>
+
+This endpoint creates a new proposal.
+
+In order to create a proposal, you must provide details about the group, all the individuals to be covered by the plan (including dependents), and all information about the quoting broker.
+
+You may specify particular `plan_ids` you wish to be quoted. Note that Arlo groups plans internally by “program”, so even when requesting a single `plan_id`, the response may include all plans associated with that program. You can disregard any additional plans not relevant to your needs.
+
+Proposal creation is “asynchronous”. In other words, you will receive a `proposal_id` in the response.
+
+
+#### Requesting broker and agency information
+The request body must include complete broker and agency information:
+
+**Required Broker Details:**
+
+- Broker name
+- Broker email
+- Broker NPN (National Producer Number)
+
+**Agency Details:**
+
+- Agency name
+- Agency NPN
+
+This information is essential for proper proposal attribution and compliance requirements.
+Note: If a broker operates independently (not affiliated with an agency), you may set agency_name and agency_npn to null. However, all broker fields remain mandatory.
+
+
+### Retrieve proposal quotes
+
+[Endpoint Documentation](https://underwriting-api.joinarlo.com/docs#/Proposal/route_handler_cpq_proposal__proposal_id__get)
+
+<CodeGroup>
+```sh Request
+curl --request GET \
+  --header "Authorization: Bearer <your_api_key>" \
+  --header "Arlo-API-Version: 2025-04-01" \
+  --url https://underwriting-api.joinarlo.com/cpq/proposal/<proposal_id>
+```
+</CodeGroup>
+
+After creating a proposal, you can poll this endpoint to retrieve the quoted information. The response provides comprehensive details about the proposal request and the quoted rates for all requested plan designs.
+
+After creating a proposal, you can poll this endpoint to check its status. Most quotes are processed within 45 seconds. **To prevent server overload, please limit polling frequency to once every 10-15 seconds.**
+
+
+### Mark a proposal sold
+
+[Endpoint Documentation](https://underwriting-api.joinarlo.com/docs#/Proposal/route_handler_cpq_proposal__proposal_id__mark_sold_post)
+
+<CodeGroup>
+```sh Request
+curl --request POST \
+  --header "Authorization: Bearer <your_api_key>" \
+  --header "Arlo-API-Version: 2025-04-01" \
+  --url https://underwriting-api.joinarlo.com/cpq/proposal/<proposal_id>/mark-sold
+```
+</CodeGroup>
+
+When a quoting broker decides to proceed with an Arlo plan, you can mark the proposal as sold. This requires only the proposal ID—no need to specify individual plans.
+
+Upon successful completion, the response will include a `url` and `message`:
+
+1. Display the `message` to the broker after they've marked the group as sold
+2. Redirect the broker to the provided `url`
+
+The broker will experience one of two flows:
+
+1. Brokers who have never sold with Arlo before: Redirected to a calendar scheduling page where our sales team will promptly arrange a meeting to explain the implementation process
+2. Returning brokers: Directly routed to the Arlo quoting portal where they can navigate the implementation process independently
+
+
+# Authentication
+
+You will receive your testing API key separately in the format `arlo_test_*`. Production API keys follow the format `arlo_live_*`.
+
+# API Versioning
+
+The CPQ API implements versioning through the `Arlo-API-Version` header. The current version is `2025-04-01`. New API versions will be released only when introducing breaking changes.
+
+
+Note: You can use the production URL for testing by simply using your test API key instead of your live key.
+
+# Testing
+
+By default, the `/proposal` endpoints return mock responses to simplify testing. Mock mode is automatically enabled when using test API keys.
+
+**Mock mode behavior:**
+- Request parameters are validated normally
+- No actual quoting or processing is performed
+- Mock rates and information are returned
+- Response structure is identical to production responses
+
+**To disable mock mode:**
+Set the `arlo-mock-response` header to `false` for full integration testing. We recommend using this option sparingly and only as a final verification step before production, to minimize unnecessary load on the sandbox environment.
+
+```sh Request
+# Explicitly set the mock response to true
+curl --request GET \
+  --header "Authorization: Bearer <your_api_key>" \
+  --header "Arlo-API-Version: 2025-04-01" \
+  --header "Arlo-Mock-Response: true" \
+  --url https://underwriting-api.joinarlo.com/cpq/proposal/<proposal_id>
+
+# Explicitly set the mock response to false
+curl --request GET \
+  --header "Authorization: Bearer <your_api_key>" \
+  --header "Arlo-API-Version: 2025-04-01" \
+  --header "Arlo-Mock-Response: false" \
+  --url https://underwriting-api.joinarlo.com/cpq/proposal/<proposal_id>
+```
+
+# Request IDs
+
+All requests to the CPQ API will return a `x-request_id` in the response headers. This ID can be used to correlate requests with responses and for debugging purposes. We recommend
+logging these IDs if you ever need to reach out to us about an issue.
+
+```sh Response
+HTTP/1.1 200 OK
+Content-Type: application/json
+x-request-id: 123e4567-e89b-12d3-a456-426614174000
+```
+
+---
+
+Please reach out to [karthik+cpq@joinarlo.com](mailto:karthik+cpq@joinarlo.com) if you have any questions!
+
+

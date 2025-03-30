@@ -28,7 +28,7 @@
     {
       "name": "Website",
       "icon": "browser",
-      "url": "https://joinarlo.com"
+      "url": "https://mintlify.com/docs"
     }
   ],
   "navigation": [
@@ -40,6 +40,12 @@
         "submit-a-quote",
         "implementation",
         "faqs"
+      ]
+    },
+    {
+      "group": "CPQ API",
+      "pages": [
+        "quoting-with-the-cpq-api"
       ]
     }
   ],
