@@ -135,7 +135,11 @@ curl --request GET \
 
 After creating a proposal, you can poll this endpoint to retrieve the quoted information. The response provides comprehensive details about the proposal request and the quoted rates for all requested plan designs.
 
-After creating a proposal, you can poll this endpoint to check its status. Most quotes are processed within 45 seconds. **To prevent server overload, please limit polling frequency to once every 10-15 seconds.**
+After creating a proposal, you can poll this endpoint to check its status. **To prevent server overload, please limit polling frequency to once every 10-15 seconds.**
+- Fully underwritten quotes are typically available within 45 seconds.
+- Illustrative quotes are typically available within 10 seconds.
+
+See the [Fully Underwritten vs Illustrative Rates](#fully-underwritten-vs-illustrative-rates) section for more details.
 
 
 ### Mark a proposal sold
@@ -162,6 +166,17 @@ The broker will experience one of two flows:
 
 1. Brokers who have never sold with Arlo before: Redirected to a calendar scheduling page where our sales team will promptly arrange a meeting to explain the implementation process
 2. Returning brokers: Directly routed to the Arlo quoting portal where they can navigate the implementation process independently
+
+# The Proposal Object
+A single proposal can include quotes for multiple plans. Each plan quote provides not only rates but also detailed information about the funding structure, contract length, quote assessment type, and more.
+
+## Fully Underwritten vs Illustrative Rates
+Each plan quote includes a `quote_assessment_type` field, which will be either `FULLY_UNDERWRITTEN` or `ILLUSTRATIVE`.
+
+- `FULLY_UNDERWRITTEN`: Rates are generated through a comprehensive medical underwriting process.
+- `ILLUSTRATIVE`: Rates are based on a simplified assessment using only the group’s demographic information.
+
+It's important for CPQ API consumers to identify the `quote_assessment_type` for each plan quote and ensure the appropriate context is communicated to the broker.
 
 
 # Authentication
