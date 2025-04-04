@@ -1,0 +1,81 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Arlo Support Center",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "anchors": [
+      {
+        "anchor": "Documentation",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Quoting with Arlo",
+            "pages": [
+              "introduction",
+              "underwriting-guidelines",
+              "submit-a-quote",
+              "implementation",
+              "faqs"
+            ]
+          },
+          {
+            "group": "CPQ API",
+            "pages": [
+              "quoting-with-the-cpq-api"
+            ]
+          },
+          {
+            "group": "API",
+            "openapi": {
+              "source": "https://underwriting-api.joinarlo.com/openapi.json"
+            }
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Website",
+          "href": "https://mintlify.com/docs",
+          "icon": "browser"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg"
+  },
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Quoting Portal",
+      "href": "https://quotes.joinarlo.com"
+    }
+  },
+  "seo": {
+    "metatags": {
+      "og:image": "/images/hero-figma.svg",
+      "og:title": "Arlo Support Center",
+      "og:description": "Welcome to the Arlo Support Center. Here you can find everything you need to know about Arlo, from underwriting guidelines to implementation."
+    },
+    "indexing": "navigable"
+  },
+  "footer": {
+    "socials": {
+      "website": "https://joinarlo.com",
+      "linkedin": "https://www.linkedin.com/company/arlo-health/"
+    }
+  }
+}
